@@ -46,7 +46,7 @@ module.exports = app => {
     app.post('/api/surveys/webhooks', (req, res) => {
         const p = new Path('/api/surveys/:surveyId/:choice');
 
-        const animals = _.chain(req.body)
+        _.chain(req.body)
             .map(({ email, url }) => {
                 const match = p.test(new URL(url).pathname);
                 if (match) {
@@ -57,7 +57,7 @@ module.exports = app => {
             .uniqBy('email', 'surveyId')
             .each(({ surveyId, email, choice}) => {
 
-                const mule = Survey.updateOne({
+                Survey.updateOne({
                     id: surveyId,
                     recipients: {
                         $elemMatch: { email: email, responded: false }
@@ -70,7 +70,6 @@ module.exports = app => {
             })
             .value();
 
-        console.log('bowie',animals);
         res.send({});
     })
 };
